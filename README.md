@@ -1,110 +1,117 @@
-				*Laravel Tenancy - Multi Database*
+## Laravel Tenancy - Multi Database
 
-##https://codeexperts.com.br/ ##Professor:Nanderson Castro.
+> Material de estudos feito apatir do curso Laravel-Tenancy---Multi-Database cujo tem como Professor: Nanderson Castro </br>
+Através da Plataforma: https://codeexperts.com.br/curso/laravel-tenancy-2.
 
-Iniciando Projeto [
-para criar o projeto laravel com sail
-	curl -s https://laravel.build/vetrines?with=pgsql
+__Iniciando Projeto__
 
-criar um simplicador para o comando sail
-	alias sail="./vendor/bin/sail"
+* Para criar o projeto laravel com sail
 
-para levantar os cotainers 
-	sail up -d 
-]
+        curl -s https://laravel.build/NOMEDOPROJETO?with=pgsql
+        
+* Criar um simplicador para o comando sail.
+	
+        alias sail="./vendor/bin/sail"
 
-Configurando Pacote [
-para baixar o pacote tenacy
-	sail composer require stancl/tenancy
+* para levantar os cotainers 
 
-para instalar o pacote tenacy no projeto
-	sail artisan tenancy:install
+	    sail up -d 
 
-Habilitar no larael
- vá em confing/app.php no array de 'providers'=>[adicione: App\Providers\TenancyServiceProvider::class após RouterServiceProvider];
+__Configurando Pacote__
+* Para baixar o pacote tenacy
 
-]
+	    sail composer require stancl/tenancy
 
-Boas platicas adequando Models [ 
-	sail artisan make:model Tenant
+* Para instalar o pacote tenacy no projeto
+
+	    sail artisan tenancy:install
+
++ Habilitar no larael
+
+* Vá em confing/app.php no array de 'providers'=>[ após RouterServiceProvider ]; adicione:
+ 
+        App\Providers\TenancyServiceProvider::class 
+
+__Boas platicas, Adequando Models__
+
+* Gere o model de Tenant
+
+    	sail artisan make:model Tenant
+        
 E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model 
 
-Substitua no model de Tenant
+* Substitua no model de Tenant
 
-namespace App\Models;
+        namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Stancl\Tenancy\Database\Models\Tenant as TenantBase;
-use Stancl\Tenancy\Contracts\TenantWithDatabase;
-use Stancl\Tenancy\Database\Concerns\HasDatabase;
-use Stancl\Tenancy\Database\Concerns\HasDomains;
+        use Illuminate\Database\Eloquent\Factories\HasFactory;
+        use Stancl\Tenancy\Database\Models\Tenant as TenantBase;
+        use Stancl\Tenancy\Contracts\TenantWithDatabase;
+        use Stancl\Tenancy\Database\Concerns\HasDatabase;
+        use Stancl\Tenancy\Database\Concerns\HasDomains;
 
-class Tenant extends TenantBase implements TenantWithDatabase
-{
-    use HasFactory, HasDatabase, HasDomains;
-}
+        class Tenant extends TenantBase implements TenantWithDatabase
+        {
+            use HasFactory, HasDatabase, HasDomains;
+        }
 
+* Gere o model de Domain
 
-
-	sail artisan make:model Domain
+	     sail artisan make:model Domain
+    
 E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model 
+* Adicione no model de Domain
 
-Adicione no model de Domain
-	use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
+         use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
 
-	class Domain extends BaseDomain
-	{
-    		use HasFactory;
-	}
+	     class Domain extends BaseDomain
+	     {
+    		    use HasFactory;
+	     }
 
-E em tenancy subtitua use Stancl\Tenancy\Database\Models\{Tenant, Domain} por
-use App\Models\{Tenant, Domain};
+* E em tenancy subtitua use Stancl\Tenancy\Database\Models\{Tenant, Domain} por
 
-]
+        use App\Models\{Tenant, Domain};
 
-Adequando Domínios Centrais [
-Abrar app/Providers/RouteServiceProvider.php
-substitua 
-    public function boot()
-    {
-        $this->configureRateLimiting();
+__Adequando Domínios Centrais__ 
+* Abrar app/Providers/RouteServiceProvider.php substitua 
 
-        $this->routes(function () {
-	$this->mapWebRoutes();
+        public function boot()
+        {
+                $this->configureRateLimiting();
 
-	$this->mapApiRoutes();
-        });
-    }
+                $this->routes(function () {
+	                $this->mapWebRoutes();
 
- E cole logo abaixo as 3 funções a seguir
+	                $this->mapApiRoutes();
+                });
+         }
 
-public function mapApiRoutes(){
-	foreach($this->centralDomains() as $domain){
-		Route::middleware('api')
-		->domain($domain)
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
-	}
-}
+* E cole logo abaixo as 3 funções a seguir
 
-public function mapWebRoutes(){	
-	foreach($this->centralDomains() as $domain){
- 		Route::middleware('web')
-		->domain($domain)
-                ->group(base_path('routes/web.php'));
-	}
-}
+        public function mapApiRoutes(){
+            foreach($this->centralDomains() as $domain){
+                Route::middleware('api')
+                      ->domain($domain)
+                      ->prefix('api')
+                      ->group(base_path('routes/api.php'));
+            }
+        }
 
-protected function centralDomains()`
-{
-	return config('tenancy.central_domains');
-}
+        public function mapWebRoutes(){	
+            foreach($this->centralDomains() as $domain){
+                Route::middleware('web')
+                      ->domain($domain)
+                      ->group(base_path('routes/web.php'));
+            }
+        }
 
-]
+        protected function centralDomains()`
+        {
+            return config('tenancy.central_domains');
+        }
+        
+* Criando Migrações Tenant
 
-Criando Migrações Tenant[
-
-sail artisan make:migration create_restaurants_table --path=database/migrations/tenant
-sail artisan make:migration create_menus_table --path=database/migrations/tenant
-
-]
+        sail artisan make:migration create_restaurants_table --path=database/migrations/tenant
+        sail artisan make:migration create_menus_table --path=database/migrations/tenant
