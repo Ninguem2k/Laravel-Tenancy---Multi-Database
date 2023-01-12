@@ -1,7 +1,7 @@
 ## Laravel Tenancy - Multi Database
 
-> Material de estudos feito apatir do curso Laravel-Tenancy---Multi-Database cujo tem como Professor: Nanderson Castro </br>
-Através da Plataforma: https://codeexperts.com.br/curso/laravel-tenancy-2.
+> Material de estudos feito apatir do curso Laravel-Tenancy---Multi-Database </br> Cujo tem como Professor: Nanderson Castro </br>
+Através da Plataforma: https://codeexperts.com.br/curso/laravel-tenancy-2
 
 __Iniciando Projeto__
 
