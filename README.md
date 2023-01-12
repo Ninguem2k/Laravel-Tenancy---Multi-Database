@@ -26,7 +26,7 @@ __Configurando Pacote__
  
             sail artisan tenancy:install
  
-+ Habilitar no laravel
++ Pra habilitar o tenancy no laravel
  
 * Vá em confing/app.php no array de 'providers'=>[ após RouterServiceProvider ]; adicione:
  
