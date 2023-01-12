@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->string('photo');
 
-            $table->intager('price')->nullable;
+            $table->integer('price')->nullable;
 
             $table->timestamps();
         });
