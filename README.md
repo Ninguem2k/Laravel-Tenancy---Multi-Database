@@ -177,9 +177,9 @@ salve como .bat
 
 * No App\jobs\CreateRootUserTenant adicione e substitua 
 
-    private $tenant;
+        private $tenant;
 
-    public function __construct($tenant)
-    {
-        $this->tenant = $tenant;
-    }
+        public function __construct($tenant)
+        {
+            $this->tenant = $tenant;
+        }
