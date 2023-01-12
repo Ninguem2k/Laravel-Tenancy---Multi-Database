@@ -38,7 +38,7 @@ __Boas platicas, Adequando Models__
  
         sail artisan make:model Tenant
        
-E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model
+_E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model_
  
 * Substitua no model de Tenant
  
@@ -59,7 +59,7 @@ E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de
  
              sail artisan make:model Domain
    
-E pode remover use Illuminate\Database\Eloquent\Model; pois ele já estende de model
+_E pode remover use Illuminate\Database\Eloquent\Model; pois ele já estende de model_
 * Adicione no model de Domain
  
          use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
@@ -124,4 +124,4 @@ __Adequando Domínios Centrais__
         start ubuntu.exe
         echo cd /home/c2k/projects/vetrines; alias sail="./vendor/bin/sail"; sail up -d; code . | clip
  
-salve como .bat
+_salve como .bat_
