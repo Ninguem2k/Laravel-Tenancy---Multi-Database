@@ -115,3 +115,13 @@ __Adequando Domínios Centrais__
 
         sail artisan make:migration create_restaurants_table --path=database/migrations/tenant
         sail artisan make:migration create_menus_table --path=database/migrations/tenant
+
+* Comando para execultar o ambiente de desevolvimento com docker sail 
+
+        @echo 
+        start http://localhost
+        call "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        start ubuntu.exe
+        echo cd /home/c2k/projects/vetrines; alias sail="./vendor/bin/sail"; sail up -d; code . | clip
+
+salve como .bat
