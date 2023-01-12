@@ -11,5 +11,12 @@ use Stancl\Tenancy\Database\Concerns\HasDomains;
 class Tenant extends TenantBase implements TenantWithDatabase
 {
     use HasFactory, HasDatabase, HasDomains;
+    
+    protected static function booted(){
+        static::creating(function($tenant){
+            $tenant->password =bcrypt($tenant->password);
+            $tenant->role = 'ROLE_ADMIN';
+        });
+    }
 }
 

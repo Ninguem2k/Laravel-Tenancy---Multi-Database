@@ -116,7 +116,7 @@ __Adequando Domínios Centrais__
         sail artisan make:migration create_restaurants_table --path=database/migrations/tenant
         sail artisan make:migration create_menus_table --path=database/migrations/tenant
 
-* Comando para execultar o ambiente de desevolvimento com docker sail 
+* Comando para execultar o ambiente de desevolvimento com docker sail automatizado
 
         @echo 
         start http://localhost
@@ -125,3 +125,62 @@ __Adequando Domínios Centrais__
         echo cd /home/c2k/projects/vetrines; alias sail="./vendor/bin/sail"; sail up -d; code . | clip
 
 salve como .bat
+
+* Instale o pacote Breeze
+
+        sail composer require laravel/breeze --dev
+
+* Instalar o Breeze no Laravel
+
+        sail artisan breeze:install
+* Mova o comando a seguir de routes/web.php para routes/tenant.php logo abaixo da rota home "/"
+
+        require __DIR__.'/auth.php';
+
+* Para corrigir o erro de acents basta ir em config/tenancy.php e mudar de true para false ou subtituir como codigo abaixo
+
+        'asset_helper_tenancy' => false,
+
+* Crie um controller para  RegisterTenantController
+
+        sail artisan make:controller RegisterTenantController
+
+* No controller de RegisterTenantController cole seguintes functions
+
+        public function register(){
+                return view('auth.register-tenant');
+        }
+        
+        public function store(Request $request){
+                dd($request->all());
+        }
+
+* No App\Models\Tenant.php adcione
+
+        protected static function booted(){
+          static::creating(function($tenant){
+             tenant->password =bcrypt($tenant->password);
+             $tenant->role = 'ROLE_ADMIN';
+          });
+        }
+
+* Em App\Providers\TenancyServiceProvider.php inporte CreateRootUserTenant
+
+        use App\jobs\CreateRootUserTenant;
+
+* Em App\Providers\TenancyServiceProvider.php>TenancyServiceProvider>events após // jobs\SeedDatabase::class, adicione 
+
+        CreateRootUserTenant::class,
+
+* Crie um novo job atraves 
+
+        sail artisan make:job CreateRootUserTenant
+
+* No App\jobs\CreateRootUserTenant adicione e substitua 
+
+    private $tenant;
+
+    public function __construct($tenant)
+    {
+        $this->tenant = $tenant;
+    }
