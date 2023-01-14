@@ -52,7 +52,15 @@ _E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende d
  
         class Tenant extends TenantBase implements TenantWithDatabase
         {
-            use HasFactory, HasDatabase, HasDomains;
+                use HasFactory, HasDatabase, HasDomains;
+                
+                protected static function booted()
+                {
+                   static::creating(function($tenant){
+                        $tenant->password = bcrypt($tenant->password);
+                        $tenant->role = 'ROLE_ADMIN';
+                   });
+                }
         }
  
 * Gere o model de Domain
@@ -150,8 +158,14 @@ salve como .bat
                 return view('auth.register-tenant');
         }
         
-        public function store(Request $request){
-                dd($request->all());
+        public function store(RegisterTenantRequest $request){
+                
+                $tenant = Tenant::create($request->validated());
+    
+                $tenant->createDomain(['domain'=>$request->domain]);
+        
+                return redirect(tenant_route($tenant->domains()->first()->domain, 'login'));
+
         }
 
 * No App\Models\Tenant.php adcione
@@ -177,9 +191,104 @@ salve como .bat
 
 * No App\jobs\CreateRootUserTenant adicione e substitua 
 
+        use App\Models\User;
+
         private $tenant;
 
         public function __construct($tenant)
         {
-            $this->tenant = $tenant;
+                $this->tenant = $tenant;
         }
+
+        public function handle()
+        {
+            $this->tenant->run(function($tenant){
+                User::create($tenant->only('name','email', 'password','role'));
+            });
+        }
+
+__Validando__
+
+* Criar um request de validação
+
+        sail artisan make:request RegisterTenantRequest
+
+* Em RegisterTenantRequest adicione após a função de validação
+
+        >use Illuminate\Validation\Rules;
+        >>para que validação da senha seja correta adicione
+
+        protected function prepareForValidation()
+        {
+            $this-merge(['domain'=>$this->domain .'.localhost'])
+        }
+
+__Livewire no Projeto__
+
+* Inserir o livewire no projeto
+
+        sail composer require livewire/livewire
+
+* Adicione @livewireStyles @livewireScripts no layout do sistema
+
+* Gere os Models para Restaurante e para Menus
+
+        sail artisan make:model  Tenant/Restaurant
+        sail artisan make:model  Tenant/Menu
+
+* Gere o componente livewire
+
+        sail artisan make:livewire tenant.restuarant
+
+__Livewire Configs Específicas pro Tenancy__
+
+* Acessar todos pacotes existente no projeto 
+
+        sail artisan vendor:publish
+
+* Selecione livewire:config para modificar a config selecionado o numero correspondente
+
+* Em config livewire.php substua 'middleware_group' => 'web', por 'middleware_group' => ['web','universal', initializeTenancyByDomain::class],
+
+* Em config tenancy.php no array features desconte 
+
+        Stancl\Tenancy\Features\UniversalRoutes::class,
+
+* Já em App\Http\kenel.php adicone 'universal' => [] emm middlewareGroups após api
+
+* Para gerar os componetes no Livewire
+
+        sail artisan make:livewire tenants.restaurant-menu.index       
+        sail artisan make:livewire tenants.restaurant-menu.item       
+        sail artisan make:livewire tenants.restaurant-menu.delete       
+
+__Migrations retaurant__
+
+* Correção da migration
+        
+        sail artisan make:migration alter_menus_table_remove_restaurant_id_column --table=menus --path=database/migrations/tenant
+
+_Na migration de menus comende a chave estrageira_
+_Já na migration criado logo a cima adicione no up_
+        
+        Schema::table('menus', function (Blueprint $table) {
+            $table->dropForeing('menus_retaurant_id_foreign');
+            $table->dropColumn('retaurant_id');
+        });
+
+_E em down_
+
+        Schema::table('menus', function (Blueprint $table) {
+            $table->foreignId('restaurant_id')
+                ->constrained()
+                ->cascadeOnDelete();
+        });
+
+_após isso basta rodar a migration no tenants_
+
+        sail artisan tenants:migrate
+
+__Upload__
+
+        
+

@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class CreateRootUserTenant implements ShouldQueue
 {
@@ -32,6 +33,8 @@ class CreateRootUserTenant implements ShouldQueue
      */
     public function handle()
     {
-        dd($this->tenant);
+        $this->tenant->run(function($tenant){
+            User::create($tenant->only('name','email', 'password','role'));
+        });
     }
 }

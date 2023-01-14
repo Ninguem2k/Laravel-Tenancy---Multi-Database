@@ -14,7 +14,7 @@ class Tenant extends TenantBase implements TenantWithDatabase
     
     protected static function booted(){
         static::creating(function($tenant){
-            $tenant->password =bcrypt($tenant->password);
+            $tenant->password = bcrypt($tenant->password);
             $tenant->role = 'ROLE_ADMIN';
         });
     }
