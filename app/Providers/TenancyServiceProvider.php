@@ -12,7 +12,7 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
-use App\jobs\CreateRootUserTenant;
+use App\Jobs\CreateRootUserTenant;
 
 class TenancyServiceProvider extends ServiceProvider
 {
