@@ -23,9 +23,13 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+
+    Route::get('/', function (\App\Models\Tenant\Restaurant $restaurant, \App\Models\Tenant\Menu $menu) {
+        $restaurant = $restaurant->first();
+        $menuItems = $menu->orderBy('id','DESC')->paginate(10);
+
+        return view('tenant-home', compact('restaurant', 'menuItems'));
+    })->name('tenant-home');
      
     Route::get('/dashboard', function () {
         return view('dashboard');
