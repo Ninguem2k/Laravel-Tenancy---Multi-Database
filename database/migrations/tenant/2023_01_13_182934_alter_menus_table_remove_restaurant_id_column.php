@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('menus', function (Blueprint $table) {
-            $table->dropForeing('menus_retaurant_id_foreign');
-            $table->dropColumn('retaurant_id');
+            // $table->dropForeing('menus_retaurant_id_foreign');
+            // $table->dropColumn('retaurant_id');
         });
     }
 

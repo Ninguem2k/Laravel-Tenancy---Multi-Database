@@ -35,11 +35,12 @@ __Configurando Pacote__
 __Boas platicas, Adequando Models__
  
 * Gere o model de Tenant
- 
-        sail artisan make:model Tenant
-       
+
+    	sail artisan make:model Tenant
+        
 _E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model_
- 
+
+
 * Substitua no model de Tenant
  
         namespace App\Models;
@@ -64,10 +65,11 @@ _E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende d
         }
  
 * Gere o model de Domain
- 
-             sail artisan make:model Domain
-   
-_E pode remover use Illuminate\Database\Eloquent\Model; pois ele já estende de model_
+
+	     sail artisan make:model Domain
+    
+_E pode remover use Illuminate\Database\Eloquent\Model; póis ele jás extende de model_ 
+
 * Adicione no model de Domain
  
          use Stancl\Tenancy\Database\Models\Domain as BaseDomain;
@@ -123,6 +125,44 @@ __Adequando Domínios Centrais__
  
         sail artisan make:migration create_restaurants_table --path=database/migrations/tenant
         sail artisan make:migration create_menus_table --path=database/migrations/tenant
+
+__Pasta Storage Inquilino Usando Jobs__
+
+        sail artisan make:job CreateFrameworkDirectoriesForTenant
+
+* Em seguida adicione no job criado
+    
+        namespace App\Jobs;
+
+        use App\Models\Tenant;
+
+        class CreateFrameworkDirectoriesForTenant implements ShouldQueue{
+                protected $tenant;
+
+                public function __construct(Tenant $tenant)
+                {
+                        $this->tenant = $tenant;
+                }
+
+                public function handle()
+                {
+                        $this->tenant->run(function ($tenant) {
+                        $storage_path = storage_path();
+
+                        mkdir("$storage_path/framework/cache", 0777, true);
+                        });
+                }
+        }
+
+* Logo a seguir após criação do job basta adicionar na lista de execurção
+* faça a inportação Em App\Providers\TenancyServiceProvider.php
+
+        use App\jobs\{CreateRootUserTenant, CreateFrameworkDirectoriesForTenant};
+
+* E adicionado o comando a seguir em jobPipeline antes de CreateRootUserTenant::class,
+
+        CreateFrameworkDirectoriesForTenant::class,
+        
 
 * Comando para execultar o ambiente de desevolvimento com docker sail automatizado
 
@@ -189,6 +229,7 @@ salve como .bat
 
         sail artisan make:job CreateRootUserTenant
 
+
 * No App\jobs\CreateRootUserTenant adicione e substitua 
 
         use App\Models\User;
@@ -220,7 +261,8 @@ __Validando__
 
         protected function prepareForValidation()
         {
-            $this-merge(['domain'=>$this->domain .'.localhost'])
+                $centralDomain = config('tenancy.central_domains')[0];
+                $this->merge(['domain'=>$this->domain .'.'. $centralDomain]);
         }
 
 __Livewire no Projeto__
@@ -288,7 +330,11 @@ _após isso basta rodar a migration no tenants_
 
         sail artisan tenants:migrate
 
-__Upload__
+__Trabalhando Preços Corretamente__
+
+* EM App/Models/Tenant/Menu.php adicione;
+
+        
 
         
 

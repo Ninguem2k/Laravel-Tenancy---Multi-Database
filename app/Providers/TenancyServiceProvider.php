@@ -12,7 +12,7 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
-use App\Jobs\CreateRootUserTenant;
+use App\Jobs\{CreateRootUserTenant, CreateFrameworkDirectoriesForTenant};
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -29,6 +29,7 @@ class TenancyServiceProvider extends ServiceProvider
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
                     // Jobs\SeedDatabase::class,
+                    CreateFrameworkDirectoriesForTenant::class,
                     CreateRootUserTenant::class,
 
                     // Your own jobs to prepare the tenant.

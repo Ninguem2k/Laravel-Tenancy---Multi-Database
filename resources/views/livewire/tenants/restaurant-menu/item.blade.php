@@ -27,7 +27,7 @@
 
         <div class="w-full mb-8">
             <label>Preço</label>
-            <input type="text" class="w-full rounded mt-2 @error('menu.price') border-red-700 @enderror" wire:model="menu.price">
+            <input type="text" class="w-full rounded mt-2 @error('menu.price') border-red-700 @enderror" wire:model.defer="menu.price">
 
             @error('menu.price')
              <strong class="block mt-4 text-red-700 font-bold">{{$message}}</strong>
